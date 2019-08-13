@@ -114,7 +114,7 @@ function Search(){
             {/* ReactiveBase: a backend connector where we can configure the Elasticsearch index */}
             <ReactiveBase
             app="macros"
-            url="http://localhost:9200"
+            url="https://goodmealprep.com"
             theme = {theme}
             > 
                 {/* other components will go here. */}
