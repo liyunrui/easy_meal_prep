@@ -1,0 +1,7 @@
+{
+    "routes": [
+        { "src": "/users/login", "dest": "http://18.222.33.16/users/login" }, 
+        { "src": "/users/register", "dest": "http://18.222.33.16/users/register" },
+        { "src": "/search", "dest": "https://goodmealprep.com" }
+    ]
+}
