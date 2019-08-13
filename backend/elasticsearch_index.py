@@ -12,12 +12,12 @@ pd.options.display.max_rows = 100
 pd.options.display.max_columns = 100
 pd.options.display.max_colwidth = 500
 
-def connect_elasticsearch():
+def connect_elasticsearch(ip = "localhost"):
     """
     Before running this function, make sure you launch elasticsearch in terminal 
     """
     _es = None
-    _es = Elasticsearch([{'host': 'localhost', 'port': 9200}])
+    _es = Elasticsearch([{'host': ip, 'port': 9200}])
     if _es.ping():
         print('Succesfully Connected')
     else:
@@ -106,8 +106,8 @@ if __name__ == "__main__":
     #-------------------------
     # load data
     #-------------------------
-    data_dir = "/Users/yunrui.li/meal_prep_own/meal_prep_refractor/easy-meal-prep/data"
-    df = pd.read_excel(os.path.join(data_dir,"台灣食品成分資料庫2018版1071207.xlsx"))
+    data_dir = "/home/ubuntu/easy_meal_prep/data"
+    df = pd.read_excel(os.path.join(data_dir,"TW_food_macros_2018.xlsx"))
     #-------------------------
     # pre-processing
     #-------------------------
@@ -151,7 +151,7 @@ if __name__ == "__main__":
             pass
         else:
             # connected to elasticsearch
-            es = connect_elasticsearch()
+            es = connect_elasticsearch(ip = "172.31.15.138") # private ip on aws
             # index data 
             out = store_record(es, index_name = 'macros', record = result)
             print('Data indexed successfully')
