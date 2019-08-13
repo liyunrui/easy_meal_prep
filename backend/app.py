@@ -7,30 +7,20 @@ from flask_bcrypt import Bcrypt
 from flask_jwt_extended import JWTManager
 from flask_jwt_extended import (create_access_token, create_refresh_token, jwt_required, jwt_refresh_token_required, get_jwt_identity, get_raw_jwt)
 from elasticsearch import Elasticsearch
-
+from elasticsearch_index import connect_elasticsearch
 app = Flask(__name__)
 
+#mongo_url = "mongodb+srv://yunruili:Rayphysics1030@mongodbpractice-3llep.mongodb.net/test?retryWrites=true&w=majority"
+mongo_url = "mongodb://yunruili:Rayphysics1030@mongodbpractice-shard-00-00-3llep.mongodb.net:27017,mongodbpractice-shard-00-01-3llep.mongodb.net:27017,mongodbpractice-shard-00-02-3llep.mongodb.net:27017/test?ssl=true&replicaSet=mongodbpractice-shard-0&authSource=admin&retryWrites=true&w=majority"
 app.config['MONGO_DBNAME'] = 'mealprep'
-app.config['MONGO_URI'] = 'mongodb://localhost:27017/mealprep'
+#app.config['MONGO_URI'] = 'mongodb://localhost:27017/mealprep'
+app.config['MONGO_URI'] = mongo_url
 app.config['JWT_SECRET_KEY'] = 'secret'
 
 mongo = PyMongo(app)
 bcrypt = Bcrypt(app)
 # Setup the Flask-JWT-Extended extension
 jwt = JWTManager(app)
-
-# elastic search
-def connect_elasticsearch():
-    """
-    Before running this function, make sure you launch elasticsearch in terminal 
-    """
-    _es = None
-    _es = Elasticsearch([{'host': 'localhost', 'port': 9200}])
-    if _es.ping():
-        print('Succesfully Connected')
-    else:
-        print('Failed to connection')
-    return _es
 
 CORS(app)
 @app.route('/users/register', methods=['POST'])
@@ -92,7 +82,7 @@ def login():
 @app.route('/search', methods=['POST'])
 def get_top_k_relevant(top_k = 5):
     """
-    do not support chinese currently.
+    We currently don't use this route.
     """
     query = request.json["query"]
 
@@ -101,13 +91,13 @@ def get_top_k_relevant(top_k = 5):
       "food_name": query
     }
     }}
-    print ('search_object',search_object)
     index_name = 'macros'
-    es = connect_elasticsearch()
+    # connect to elasticsearch
+    es = connect_elasticsearch(ip = "172.31.15.138") # private ip on aws
     output = es.search(index=index_name, body=search_object)
     # get the most top k relevant result
     output = [s_res["_source"] for s_res in output['hits']["hits"]][:top_k]
-    print ('search result', output)
+    # print ('search result', output)
     result = jsonify({"result":output})
     return result
 
